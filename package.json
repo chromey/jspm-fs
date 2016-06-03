@@ -1,5 +1,5 @@
 {
-  "name": "jspm-fs",
+  "name": "jspm-offline",
   "version": "0.2.9",
   "description": "JSPM location service for local filesystem",
   "main": "index.js",
@@ -31,7 +31,7 @@
     "chai": "^3.5.0"
   },
   "peerDependencies": {
-    "jspm": "~0.17.0-beta"
+    "jspm": "~0.16.0"
   },
   "dependencies": {
     "graceful-fs": "^4.1.3",

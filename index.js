@@ -39,13 +39,7 @@ class FilesystemLocator {
   }
 
   constructor(options, ui) {
-    this._ui = ui;
     this.versionString = options.versionString + '.1';
-
-    if (!semver.satisfies(options.apiVersion+'.0', '>=1.7 ^2.0')) {
-      throw new FilesystemLocatorError('Current jspm-fs version isn\'t compatible to the jspm Endpoint API v' +
-        options.apiVersion + '\n' + 'Please update or install a compatible version of jspm-fs.');
-    }
 
     // Determine base directory used to resolve symbolic package names
     this._baseDir = path.resolve(options.baseDir || process.env[BASEDIR_ENV_NAME] || '');
@@ -58,9 +52,7 @@ class FilesystemLocator {
     const aliasMapFile = path.join(this._baseDir, 'aliases.json');
     try {
       this._aliasMap = utils.loadJsonFile(aliasMapFile);
-      ui.log('debug', 'FilesystemLocator: Alias mapping loaded ('+aliasMapFile+')');
     } catch (exc) {
-      ui.log('debug', 'FilesystemLocator: No alias mapping file found ('+aliasMapFile+')');
       this._aliasMap = {};
     }
   }
@@ -82,7 +74,7 @@ class FilesystemLocator {
       error.config = true;
       return Promise.reject(error);
     }
-
+    
     if (!utils.isDirectory(expectedSourceDir))
       return Promise.resolve({ notfound: true });
   }
@@ -94,6 +86,7 @@ class FilesystemLocator {
    * @returns {Promise}
    */
   lookup(packageName) {
+    packageName = packageName.split('/').pop();
     let result = { notfound: true };
     const pkgFilenamePattern = new RegExp(`^${packageName}-(.+)\\.zip$`, 'i');
 
@@ -134,6 +127,7 @@ class FilesystemLocator {
    * @returns {Promise} Package.json object
    */
   download(packageName, version, hash, meta, dir) {
+    packageName = packageName.split('/').pop();
     // TODO: Add support for absolute file paths (when pkgName doesn't begin with alphanum char)
     const expectedSourceDir = path.resolve(path.join(this._baseDir, packageName));
     if (!expectedSourceDir.startsWith(this._baseDir)) {
